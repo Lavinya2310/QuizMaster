@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}My Quiz Scores & History{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h2 class="mb-4 text-center text-primary">My Quiz Scores & Attempts</h2>
+
+  {% if scores %}
+  <div class="card shadow border-0">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover table-striped align-middle mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Quiz Title</th>
+              <th scope="col">Subject / Chapter</th>
+              <th scope="col">Score</th>
+              <th scope="col">Percentage</th>
+              <th scope="col">Date & Time</th>
+              <th scope="col">Duration</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for score in scores %}
+            <tr>
+              <th scope="row">{{ loop.index }}</th>
+              <td>
+                <strong>{{ score.quiz.title }}</strong>
+              </td>
+              <td>
+                {{ score.quiz.chapter.subject.name }}  
+                <small class="text-muted d-block">
+                  → {{ score.quiz.chapter.name }}
+                </small>
+              </td>
+              <td class="fw-bold">
+                {{ score.score }} / {{ score.total }}
+              </td>
+              <td>
+                {% set percentage = (score.score / score.total * 100) if score.total > 0 else 0 %}
+                <span class="badge fs-6
+                  {% if percentage >= 80 %}bg-success
+                  {% elif percentage >= 50 %}bg-warning text-dark
+                  {% else %}bg-danger{% endif %}">
+                  {{ percentage|round(1) }}%
+                </span>
+              </td>
+              <td>
+                {{ score.attempted_at.strftime('%d %b %Y, %I:%M %p') }}
+              </td>
+              <td>
+                {{ score.quiz.duration_minutes }} min
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-4">
+    <a href="{{ url_for('user.summary') }}" class="btn btn-outline-primary btn-lg px-5">
+      View Detailed Performance Summary & Charts →
+    </a>
+  </div>
+
+  {% else %}
+  <div class="alert alert-info text-center py-5 shadow-sm">
+    <h4 class="mb-4">No quiz attempts yet</h4>
+    <p class="lead mb-4">
+      You haven't taken any quizzes so far.<br>
+      Start attempting quizzes to see your scores here!
+    </p>
+    <a href="{{ url_for('user.upcoming') }}" class="btn btn-primary btn-lg px-5">
+      Browse Available Quizzes
+    </a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

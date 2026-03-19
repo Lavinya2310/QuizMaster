@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to Quiz Master{% endblock %}
+
+{% block content %}
+<div class="container text-center py-5 my-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+
+      <h1 class="display-3 fw-bold text-primary mb-4">Quiz Master</h1>
+      
+      <p class="lead text-muted mb-5">
+        Test your knowledge with expertly crafted quizzes across various subjects.<br>
+        Challenge yourself, track your progress, and improve with every attempt.
+      </p>
+
+      <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('user.dashboard') if current_user.role == 'user' else url_for('admin.dashboard') }}" 
+             class="btn btn-primary btn-lg px-5 py-3">
+            Go to Dashboard
+          </a>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg px-5 py-3">
+            Login
+          </a>
+          <a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary btn-lg px-5 py-3">
+            Register Now
+          </a>
+        {% endif %}
+      </div>
+
+      <div class="mt-5 pt-4">
+        <h4>Features</h4>
+        <div class="row mt-4 g-4">
+          <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+              <div class="card-body text-center">
+                <h5 class="card-title">Multiple Subjects</h5>
+                <p class="card-text">Physics, Chemistry, Mathematics, and more coming soon.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+              <div class="card-body text-center">
+                <h5 class="card-title">Timed Quizzes</h5>
+                <p class="card-text">Real exam-like experience with countdown timers.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+              <div class="card-body text-center">
+                <h5 class="card-title">Performance Tracking</h5>
+                <p class="card-text">Detailed scores, charts & history for every attempt.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

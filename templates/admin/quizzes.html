@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Quizzes - {{ chapter.name }}{% endblock %}
+
+{% block content %}
+<h2 class="mb-3">
+  Quizzes in <span class="text-primary">{{ chapter.name }}</span>
+  <small class="text-muted">({{ chapter.subject.name }})</small>
+</h2>
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+  <a href="{{ url_for('admin.chapters', subject_id=chapter.subject_id) }}" class="btn btn-outline-secondary">
+    ← Back to Chapters
+  </a>
+  <a href="{{ url_for('admin.new_quiz', chapter_id=chapter.id) }}" class="btn btn-success">
+    + New Quiz
+  </a>
+</div>
+
+{% if quizzes %}
+<div class="table-responsive">
+  <table class="table table-hover table-bordered align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th style="width: 6%;">ID</th>
+        <th>Quiz Title</th>
+        <th style="width: 12%;">Questions</th>
+        <th style="width: 14%;">Duration</th>
+        <th style="width: 14%;">Scheduled</th>
+        <th style="width: 24%;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for quiz in quizzes %}
+      <tr>
+        <td>{{ quiz.id }}</td>
+        <td>
+          <strong>{{ quiz.title }}</strong>
+        </td>
+        <td class="text-center">{{ quiz.questions|length }}</td>
+        <td>{{ quiz.duration_minutes }} min</td>
+        <td>
+          {% if quiz.scheduled_date %}
+            {{ quiz.scheduled_date.strftime('%d/%m/%Y') }}
+          {% else %}
+            —
+          {% endif %}
+        </td>
+        <td>
+          <div class="btn-group btn-group-sm flex-wrap gap-1" role="group">
+            <a href="{{ url_for('admin.questions', quiz_id=quiz.id) }}" 
+               class="btn btn-outline-primary" title="Manage Questions">
+              Questions
+            </a>
+            <a href="{{ url_for('admin.edit_quiz', quiz_id=quiz.id) }}" 
+               class="btn btn-outline-warning" title="Edit Quiz">
+              Edit
+            </a>
+            <form action="{{ url_for('admin.delete_quiz', quiz_id=quiz.id) }}" method="POST" 
+                  style="display:inline;" 
+                  onsubmit="return confirm('Delete quiz \"{{ quiz.title }}\" and all its questions?');">
+              <button type="submit" class="btn btn-outline-danger" title="Delete">
+                Delete
+              </button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="alert alert-info text-center py-5">
+  <h5>No quizzes created in this chapter yet.</h5>
+  <p>Start by creating a new quiz to add questions.</p>
+  <a href="{{ url_for('admin.new_quiz', chapter_id=chapter.id) }}" class="btn btn-success mt-3">
+    + Create First Quiz
+  </a>
+</div>
+{% endif %}
+
+{% endblock %}

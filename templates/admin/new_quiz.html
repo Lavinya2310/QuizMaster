@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Create New Quiz - {{ chapter.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="mb-1">Create New Quiz</h2>
+                    <p class="text-muted mb-0">
+                        in <strong>{{ chapter.name }}</strong> 
+                        <span class="text-muted">({{ chapter.subject.name }})</span>
+                    </p>
+                </div>
+                <a href="{{ url_for('admin.quizzes', chapter_id=chapter.id) }}" 
+                   class="btn btn-outline-secondary">
+                    ← Back to Quizzes
+                </a>
+            </div>
+
+            <div class="card shadow border-0">
+                <div class="card-body p-4 p-md-5">
+
+                    <form method="POST" novalidate>
+
+                        <!-- Quiz Title -->
+                        <div class="mb-4">
+                            <label for="title" class="form-label fw-bold fs-5 required">
+                                Quiz Title
+                            </label>
+                            <input type="text" 
+                                   class="form-control form-control-lg" 
+                                   id="title" 
+                                   name="title" 
+                                   placeholder="e.g. Force and Motion - Practice Set 01"
+                                   required 
+                                   autofocus>
+                            <div class="invalid-feedback">
+                                Please enter a meaningful quiz title.
+                            </div>
+                        </div>
+
+                        <!-- Duration -->
+                        <div class="mb-4">
+                            <label for="duration_minutes" class="form-label fw-bold required">
+                                Duration (minutes)
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="duration_minutes" 
+                                       name="duration_minutes" 
+                                       min="5" 
+                                       max="180" 
+                                       step="5" 
+                                       value="30" 
+                                       required>
+                                <span class="input-group-text">minutes</span>
+                            </div>
+                            <small class="form-text text-muted">
+                                Recommended: 15–60 minutes depending on number of questions
+                            </small>
+                        </div>
+
+                        <!-- Scheduled Date (optional) -->
+                        <div class="mb-4">
+                            <label for="scheduled_date" class="form-label fw-bold">
+                                Scheduled Date
+                                <small class="text-muted">(optional)</small>
+                            </label>
+                            <input type="date" 
+                                   class="form-control form-control-lg" 
+                                   id="scheduled_date" 
+                                   name="scheduled_date">
+                            <small class="form-text text-muted">
+                                Leave empty if the quiz should be available immediately.
+                            </small>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="d-flex gap-3 mt-5 pt-3 border-top">
+                            <button type="submit" 
+                                    class="btn btn-primary btn-lg px-5">
+                                Create Quiz
+                            </button>
+                            <a href="{{ url_for('admin.quizzes', chapter_id=chapter.id) }}" 
+                               class="btn btn-outline-secondary btn-lg px-5">
+                                Cancel
+                            </a>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Optional: very basic client-side validation -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('form');
+    
+    form.addEventListener('submit', function (e) {
+        const title = document.getElementById('title');
+        const duration = document.getElementById('duration_minutes');
+        
+        let valid = true;
+
+        if (!title.value.trim()) {
+            title.classList.add('is-invalid');
+            valid = false;
+        } else {
+            title.classList.remove('is-invalid');
+        }
+
+        if (!duration.value || parseInt(duration.value) < 5) {
+            duration.classList.add('is-invalid');
+            valid = false;
+        } else {
+            duration.classList.remove('is-invalid');
+        }
+
+        if (!valid) {
+            e.preventDefault();
+            alert('Please fill in all required fields correctly.');
+        }
+    });
+});
+</script>
+
+{% endblock %}

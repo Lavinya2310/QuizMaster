@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Welcome, Administrator</h2>
+
+<div class="row mb-5">
+  <div class="col-md-4">
+    <div class="card text-white bg-primary shadow">
+      <div class="card-body">
+        <h5>Total Users</h5>
+        <p class="display-4 mb-0">{{ total_users }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-white bg-success shadow">
+      <div class="card-body">
+        <h5>Total Quizzes</h5>
+        <p class="display-4 mb-0">{{ total_quizzes }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-white bg-info shadow">
+      <div class="card-body">
+        <h5>Total Attempts</h5>
+        <p class="display-4 mb-0">{{ total_attempts|default(0) }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h4 class="mt-5 mb-4">Platform Summary Charts</h4>
+
+<div class="row g-4">
+  <!-- Chart 1: Quizzes per Subject (Bar) -->
+  <div class="col-lg-6">
+    <div class="card shadow h-100">
+      <div class="card-header bg-light">
+        <h5 class="mb-0">Quizzes per Subject</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="quizzesPerSubjectChart" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart 2: Average Score per Subject (Bar) -->
+  <div class="col-lg-6">
+    <div class="card shadow h-100">
+      <div class="card-header bg-light">
+        <h5 class="mb-0">Average Score per Subject (%)</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="avgScorePerSubjectChart" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart 3: Attempts Distribution (Pie) -->
+  <div class="col-lg-6">
+    <div class="card shadow h-100">
+      <div class="card-header bg-light">
+        <h5 class="mb-0">Quiz Attempts by Subject</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="attemptsBySubjectChart" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart 4: Top Performing Subjects (Doughnut) -->
+  <div class="col-lg-6">
+    <div class="card shadow h-100">
+      <div class="card-header bg-light">
+        <h5 class="mb-0">Top Performing Subjects (Avg %)</h5>
+      </div>
+      <div class="card-body">
+        <canvas id="topSubjectsDoughnut" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Data passed from Jinja (you'll prepare this in the route)
+  const subjectsData = {
+    labels: {{ subject_labels | tojson }},
+    quizCounts: {{ quiz_counts | tojson }},
+    avgScores: {{ avg_scores | tojson }},
+    attemptCounts: {{ attempt_counts | tojson }}
+  };
+
+  // Chart 1: Quizzes per Subject
+  new Chart(document.getElementById('quizzesPerSubjectChart'), {
+    type: 'bar',
+    data: {
+      labels: subjectsData.labels,
+      datasets: [{
+        label: 'Number of Quizzes',
+        data: subjectsData.quizCounts,
+        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: { scales: { y: { beginAtZero: true } } }
+  });
+
+  // Chart 2: Average Score per Subject
+  new Chart(document.getElementById('avgScorePerSubjectChart'), {
+    type: 'bar',
+    data: {
+      labels: subjectsData.labels,
+      datasets: [{
+        label: 'Average Score (%)',
+        data: subjectsData.avgScores,
+        backgroundColor: 'rgba(75, 192, 192, 0.7)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: { scales: { y: { beginAtZero: true, max: 100 } } }
+  });
+
+  // Chart 3: Attempts by Subject (Pie)
+  new Chart(document.getElementById('attemptsBySubjectChart'), {
+    type: 'pie',
+    data: {
+      labels: subjectsData.labels,
+      datasets: [{
+        data: subjectsData.attemptCounts,
+        backgroundColor: [
+          '#36A2EB', '#FF6384', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+        ]
+      }]
+    },
+    options: { responsive: true }
+  });
+
+  // Chart 4: Top Subjects Doughnut (same data as avg score for simplicity)
+  new Chart(document.getElementById('topSubjectsDoughnut'), {
+    type: 'doughnut',
+    data: {
+      labels: subjectsData.labels,
+      datasets: [{
+        data: subjectsData.avgScores,
+        backgroundColor: [
+          '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+        ]
+      }]
+    },
+    options: { responsive: true }
+  });
+</script>
+{% endblock %}

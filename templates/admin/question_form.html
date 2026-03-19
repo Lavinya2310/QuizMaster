@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if question %}Edit Question{% else %}New Question{% endif %} - {{ quiz.title }}
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-10">
+
+    <h2 class="mb-4">
+      {% if question %}Edit Question{% else %}Add New Question{% endif %}
+      <small class="text-muted d-block">
+        {{ quiz.title }} • {{ quiz.chapter.name }} • {{ quiz.chapter.subject.name }}
+      </small>
+    </h2>
+
+    <div class="card shadow border-0">
+      <div class="card-body p-4">
+
+        <form method="POST" novalidate>
+
+          <div class="mb-4">
+            <label for="text" class="form-label fw-bold fs-5">Question Statement <span class="text-danger">*</span></label>
+            <textarea class="form-control form-control-lg" id="text" name="text" rows="4" 
+                      required placeholder="Write the full question here... (e.g. What is the SI unit of force?)"
+                      >{{ question.text if question else '' }}</textarea>
+            <div class="invalid-feedback">Question text is required.</div>
+          </div>
+
+          <div class="row g-4 mb-4">
+            <div class="col-md-6">
+              <label for="option1" class="form-label fw-bold">Option 1 <span class="text-danger">*</span></label>
+              <input type="text" class="form-control form-control-lg" id="option1" name="option1" 
+                     value="{{ question.option1 if question else '' }}" required>
+            </div>
+            <div class="col-md-6">
+              <label for="option2" class="form-label fw-bold">Option 2 <span class="text-danger">*</span></label>
+              <input type="text" class="form-control form-control-lg" id="option2" name="option2" 
+                     value="{{ question.option2 if question else '' }}" required>
+            </div>
+            <div class="col-md-6">
+              <label for="option3" class="form-label fw-bold">Option 3</label>
+              <input type="text" class="form-control form-control-lg" id="option3" name="option3" 
+                     value="{{ question.option3 if question else '' }}">
+            </div>
+            <div class="col-md-6">
+              <label for="option4" class="form-label fw-bold">Option 4</label>
+              <input type="text" class="form-control form-control-lg" id="option4" name="option4" 
+                     value="{{ question.option4 if question else '' }}">
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-bold">Correct Option <span class="text-danger">*</span></label>
+            <div class="row g-3">
+              <div class="col-6 col-md-3">
+                <div class="form-check form-check-lg">
+                  <input class="form-check-input" type="radio" name="correct_option" id="correct1" value="1" 
+                         {% if question and question.correct_option == 1 %}checked{% endif %} required>
+                  <label class="form-check-label" for="correct1">Option 1</label>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="form-check form-check-lg">
+                  <input class="form-check-input" type="radio" name="correct_option" id="correct2" value="2" 
+                         {% if question and question.correct_option == 2 %}checked{% endif %}>
+                  <label class="form-check-label" for="correct2">Option 2</label>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="form-check form-check-lg">
+                  <input class="form-check-input" type="radio" name="correct_option" id="correct3" value="3" 
+                         {% if question and question.correct_option == 3 %}checked{% endif %}>
+                  <label class="form-check-label" for="correct3">Option 3</label>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="form-check form-check-lg">
+                  <input class="form-check-input" type="radio" name="correct_option" id="correct4" value="4" 
+                         {% if question and question.correct_option == 4 %}checked{% endif %}>
+                  <label class="form-check-label" for="correct4">Option 4</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3 mt-5">
+            <button type="submit" class="btn btn-primary btn-lg px-5 py-3">
+              {% if question %}Save Changes{% else %}Add Question{% endif %}
+            </button>
+            <a href="{{ url_for('admin.questions', quiz_id=quiz.id) }}" 
+               class="btn btn-outline-secondary btn-lg px-5 py-3">
+              Cancel
+            </a>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Basic client-side validation
+document.querySelector('form').addEventListener('submit', function(e) {
+  const text = document.getElementById('text');
+  const opt1 = document.getElementById('option1');
+  const opt2 = document.getElementById('option2');
+  const radios = document.querySelectorAll('input[name="correct_option"]');
+
+  let valid = true;
+
+  if (!text.value.trim()) {
+    text.classList.add('is-invalid');
+    valid = false;
+  }
+  if (!opt1.value.trim()) {
+    opt1.classList.add('is-invalid');
+    valid = false;
+  }
+  if (!opt2.value.trim()) {
+    opt2.classList.add('is-invalid');
+    valid = false;
+  }
+
+  let checked = false;
+  radios.forEach(r => { if (r.checked) checked = true; });
+  if (!checked) {
+    alert('Please select the correct option');
+    valid = false;
+  }
+
+  if (!valid) e.preventDefault();
+});
+</script>
+
+{% endblock %}

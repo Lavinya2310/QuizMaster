@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}{{ quiz.title }}{% endblock %}
+
+{% block content %}
+<h2>{{ quiz.title }}</h2>
+<p class="lead">
+  {{ quiz.chapter.subject.name }} → {{ quiz.chapter.name }}
+  <span class="float-end badge bg-info fs-6">Duration: {{ quiz.duration_minutes }} min</span>
+</p>
+
+<div class="alert alert-warning" id="timerContainer">
+  Time remaining: <strong id="timerDisplay">--:--</strong>
+</div>
+
+<form method="POST" action="{{ url_for('user.submit_quiz', quiz_id=quiz.id) }}" id="quizForm">
+  {% for q in questions %}
+  <div class="card mb-4 shadow-sm">
+    <div class="card-header bg-light">
+      <strong>Question {{ loop.index }}</strong>
+    </div>
+    <div class="card-body">
+      <p>{{ q.text }}</p>
+      
+      <div class="form-check">
+        <input class="form-check-input" type="radio" 
+               name="answer_{{ q.id }}" value="1" id="opt1_{{ q.id }}" required>
+        <label class="form-check-label" for="opt1_{{ q.id }}">{{ q.option1 }}</label>
+      </div>
+      
+      <div class="form-check">
+        <input class="form-check-input" type="radio" 
+               name="answer_{{ q.id }}" value="2" id="opt2_{{ q.id }}">
+        <label class="form-check-label" for="opt2_{{ q.id }}">{{ q.option2 }}</label>
+      </div>
+      
+      <div class="form-check">
+        <input class="form-check-input" type="radio" 
+               name="answer_{{ q.id }}" value="3" id="opt3_{{ q.id }}">
+        <label class="form-check-label" for="opt3_{{ q.id }}">{{ q.option3 or '—' }}</label>
+      </div>
+      
+      <div class="form-check">
+        <input class="form-check-input" type="radio" 
+               name="answer_{{ q.id }}" value="4" id="opt4_{{ q.id }}">
+        <label class="form-check-label" for="opt4_{{ q.id }}">{{ q.option4 or '—' }}</label>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+  <div class="text-center mt-5 mb-4">
+    <button type="submit" class="btn btn-lg btn-success px-5">Submit Quiz</button>
+  </div>
+</form>
+
+<script>
+  let secondsLeft = {{ quiz.duration_minutes * 60 }};
+  const timerDisplay = document.getElementById('timerDisplay');
+
+  function updateTimer() {
+    if (secondsLeft <= 0) {
+      document.getElementById('quizForm').submit();
+      return;
+    }
+    let min = Math.floor(secondsLeft / 60);
+    let sec = secondsLeft % 60;
+    timerDisplay.textContent = `${min.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
+    secondsLeft--;
+  }
+
+  setInterval(updateTimer, 1000);
+  updateTimer(); // initial call
+</script>
+{% endblock %}

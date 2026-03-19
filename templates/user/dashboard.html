@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}My Dashboard{% endblock %}
+
+{% block content %}
+<div class="container py-4 py-md-5">
+    <!-- Welcome Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold text-primary mb-3">
+            Welcome back, {{ current_user.full_name or current_user.username }}!
+        </h1>
+        <p class="lead text-muted">
+            Here's a quick look at your recent performance
+        </p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Recent Scores Card -->
+        <div class="col-lg-8">
+            <div class="card shadow border-0 rounded-3 h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Your Recent Scores</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if recent_scores %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Quiz Title</th>
+                                    <th>Score</th>
+                                    <th>Percentage</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for score in recent_scores %}
+                                <tr>
+                                    <td class="fw-semibold">
+                                        {{ score.quiz.title }}
+                                        <small class="d-block text-muted">
+                                            {{ score.quiz.chapter.subject.name }} → 
+                                            {{ score.quiz.chapter.name }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <strong>{{ score.score }} / {{ score.total }}</strong>
+                                    </td>
+                                    <td>
+                                        {% set perc = (score.score / score.total * 100) if score.total > 0 else 0 %}
+                                        <span class="badge fs-6
+                                            {% if perc >= 80 %}bg-success
+                                            {% elif perc >= 50 %}bg-warning text-dark
+                                            {% else %}bg-danger{% endif %}">
+                                            {{ perc|round(1) }}%
+                                        </span>
+                                    </td>
+                                    <td class="text-muted">
+                                        {{ score.attempted_at.strftime('%d %b %Y') }}
+                                        <small class="d-block">
+                                            {{ score.attempted_at.strftime('%I:%M %p') }}
+                                        </small>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-journal-x display-1 text-muted mb-3 d-block"></i>
+                        <h5 class="text-muted mb-3">No recent attempts</h5>
+                        <p class="text-muted mb-4">
+                            Complete your first quiz to see your scores here!
+                        </p>
+                        <a href="{{ url_for('user.upcoming') }}" 
+                           class="btn btn-primary px-4">
+                            Start a Quiz Now
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Links / Stats Sidebar -->
+        <div class="col-lg-4">
+            <div class="card shadow border-0 rounded-3 mb-4">
+                <div class="card-body text-center">
+                    <h5 class="card-title mb-3">Quick Actions</h5>
+                    <div class="d-grid gap-3">
+                        <a href="{{ url_for('user.upcoming') }}" 
+                           class="btn btn-outline-primary btn-lg">
+                            <i class="bi bi-play-circle me-2"></i> Available Quizzes
+                        </a>
+                        <a href="{{ url_for('user.scores') }}" 
+                           class="btn btn-outline-info btn-lg">
+                            <i class="bi bi-trophy me-2"></i> View All Scores
+                        </a>
+                        <a href="{{ url_for('user.summary') }}" 
+                           class="btn btn-outline-success btn-lg">
+                            <i class="bi bi-graph-up me-2"></i> Performance Charts
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simple Stats (optional enhancement) -->
+            <div class="card shadow border-0 rounded-3">
+                <div class="card-body text-center">
+                    <h5 class="mb-3">Quick Stats</h5>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="p-3 bg-light rounded">
+                                <h6 class="mb-1 text-muted">Attempts</h6>
+                                <h4 class="mb-0">{{ recent_scores|length }}</h4>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 bg-light rounded">
+                                <h6 class="mb-1 text-muted">Best Score</h6>
+                                <h4 class="mb-0">
+                                    {% if recent_scores %}
+                                        {{ (recent_scores|sort(attribute='score', reverse=true)|first).score }} / 
+                                        {{ (recent_scores|sort(attribute='score', reverse=true)|first).total }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

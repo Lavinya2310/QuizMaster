@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Subjects - Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4 py-md-5">
+    <!-- Header + Create Button -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <h2 class="mb-0 text-primary">Manage Subjects</h2>
+        
+        <a href="{{ url_for('admin.new_subject') }}" 
+           class="btn btn-success px-4 py-2 shadow-sm">
+            <i class="bi bi-plus-lg me-1"></i> New Subject
+        </a>
+    </div>
+
+    <!-- Subjects Table or Empty State -->
+    {% if subjects %}
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col" class="text-center" style="width: 80px;">ID</th>
+                            <th scope="col">Subject Name</th>
+                            <th scope="col">Description</th>
+                            <th scope="col" class="text-center" style="width: 120px;">Chapters</th>
+                            <th scope="col" style="width: 260px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for subject in subjects %}
+                        <tr>
+                            <td class="text-center fw-bold">{{ subject.id }}</td>
+                            <td class="fw-semibold">{{ subject.name }}</td>
+                            <td class="text-muted">
+                                {{ subject.description or '—' | truncate(140) }}
+                            </td>
+                            <td class="text-center fw-bold">
+                                {{ subject.chapters|length }}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{{ url_for('admin.chapters', subject_id=subject.id) }}" 
+                                       class="btn btn-outline-primary"
+                                       title="Manage chapters">
+                                        <i class="bi bi-journal-text"></i> Chapters
+                                    </a>
+
+                                    <a href="{{ url_for('admin.edit_subject', subject_id=subject.id) }}" 
+                                       class="btn btn-outline-warning"
+                                       title="Edit subject">
+                                        <i class="bi bi-pencil"></i> Edit
+                                    </a>
+
+                                    <form action="{{ url_for('admin.delete_subject', subject_id=subject.id) }}" 
+                                          method="POST" 
+                                          style="display: inline;"
+                                          onsubmit='return confirm("Are you sure you want to delete \"{{ subject.name | e }}\"?\n\nThis action will also delete all chapters, quizzes and questions under this subject.\n\nThis cannot be undone.");'>
+                                        <button type="submit" 
+                                                class="btn btn-outline-danger"
+                                                title="Delete subject">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Empty state -->
+    <div class="alert alert-light border text-center py-5 shadow-sm rounded-3">
+        <i class="bi bi-folder-x display-1 text-muted mb-4 d-block"></i>
+        <h4 class="mb-3">No subjects yet</h4>
+        <p class="lead text-muted mb-4">
+            Get started by creating your first subject.
+        </p>
+        <a href="{{ url_for('admin.new_subject') }}" 
+           class="btn btn-success btn-lg px-5">
+            <i class="bi bi-plus-lg me-1"></i> Create First Subject
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

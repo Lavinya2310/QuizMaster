@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if quiz %}Edit Quiz{% else %}New Quiz{% endif %} - {{ chapter.name }}
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-9">
+
+    <h2 class="mb-4">
+      {% if quiz %}Edit Quiz{% else %}Create New Quiz{% endif %}
+      <small class="text-muted">in {{ chapter.name }} ({{ chapter.subject.name }})</small>
+    </h2>
+
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <form method="POST" novalidate>
+
+          <div class="mb-4">
+            <label for="title" class="form-label fw-bold fs-5">Quiz Title <span class="text-danger">*</span></label>
+            <input type="text" class="form-control form-control-lg" 
+                   id="title" name="title" 
+                   value="{{ quiz.title if quiz else '' }}" 
+                   required autofocus 
+                   placeholder="e.g. Force - MCQ Practice Set 01">
+            <div class="invalid-feedback">Please provide a quiz title.</div>
+          </div>
+
+          <div class="row g-4 mb-4">
+            <div class="col-md-6">
+              <label for="duration_minutes" class="form-label fw-bold">Duration (minutes) <span class="text-danger">*</span></label>
+              <input type="number" class="form-control form-control-lg" 
+                     id="duration_minutes" name="duration_minutes" min="5" max="180" step="5"
+                     value="{{ quiz.duration_minutes if quiz else 30 }}" 
+                     required>
+              <small class="form-text text-muted">Typical values: 10–60 minutes</small>
+            </div>
+
+            <div class="col-md-6">
+              <label for="scheduled_date" class="form-label fw-bold">Scheduled Date (optional)</label>
+              <input type="date" class="form-control form-control-lg" 
+                     id="scheduled_date" name="scheduled_date" 
+                     value="{{ quiz.scheduled_date.strftime('%Y-%m-%d') if quiz and quiz.scheduled_date else '' }}">
+              <small class="form-text text-muted">Leave empty if the quiz is available immediately</small>
+            </div>
+          </div>
+
+          <div class="d-flex gap-3 mt-5">
+            <button type="submit" class="btn btn-primary btn-lg px-5 py-3">
+              {% if quiz %}Save Changes{% else %}Create Quiz{% endif %}
+            </button>
+            <a href="{{ url_for('admin.quizzes', chapter_id=chapter.id) }}" 
+               class="btn btn-outline-secondary btn-lg px-5 py-3">
+              Cancel
+            </a>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Minimal client-side validation
+document.querySelector('form').addEventListener('submit', function(e) {
+  const title = document.getElementById('title');
+  const duration = document.getElementById('duration_minutes');
+
+  if (!title.value.trim()) {
+    title.classList.add('is-invalid');
+    e.preventDefault();
+  }
+  if (!duration.value || duration.value < 5) {
+    duration.classList.add('is-invalid');
+    e.preventDefault();
+  }
+});
+</script>
+
+{% endblock %}

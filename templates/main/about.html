@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}About Quiz Master{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h1 class="mb-4">About Quiz Master</h1>
+  
+  <p class="lead">
+    Quiz Master is a simple yet powerful web-based quiz platform built for students and educators.
+  </p>
+  
+  <h4 class="mt-5">Key Features</h4>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">Admin panel to create subjects, chapters, quizzes & questions</li>
+    <li class="list-group-item">User registration & secure login</li>
+    <li class="list-group-item">Timed MCQ quizzes with instant scoring</li>
+    <li class="list-group-item">Performance dashboards & charts</li>
+    <li class="list-group-item">Built with Flask, SQLite, Bootstrap & Chart.js</li>
+  </ul>
+
+  <div class="mt-5">
+    <a href="{{ url_for('main.index') }}" class="btn btn-primary">Back to Home</a>
+  </div>
+</div>
+{% endblock %}
