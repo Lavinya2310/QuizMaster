@@ -37,4 +37,4 @@ Perfect for schools, coaching centers, self-learners, certification prep, or int
 ### Prerequisites
 - Python 3.8+
 - pip
-- Git (optional)
+- Git 
